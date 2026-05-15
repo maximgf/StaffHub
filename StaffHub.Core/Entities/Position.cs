@@ -1,7 +1,17 @@
 namespace StaffHub.Core.Entities;
 
+/// <summary>
+/// Перечисление возможных должностей сотрудников.
+/// </summary>
 public enum Position
 {
-    Worker = 0, // Работник
-    Manager = 1 // Руководитель
+    /// <summary>
+    /// Обычный работник.
+    /// </summary>
+    Worker = 0,
+
+    /// <summary>
+    /// Руководящая должность.
+    /// </summary>
+    Manager = 1
 }

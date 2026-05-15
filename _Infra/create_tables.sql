@@ -1,0 +1,26 @@
+CREATE TABLE Employees (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    LastName VARCHAR(100) NOT NULL,
+    FirstName VARCHAR(100) NOT NULL,
+    MiddleName VARCHAR(100),
+    Position INT NOT NULL,
+    BirthDate DATETIME NOT NULL
+);
+
+CREATE TABLE Counterparties (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255) NOT NULL,
+    INN VARCHAR(12) NOT NULL,
+    CuratorId INT,
+    FOREIGN KEY (CuratorId) REFERENCES Employees(Id) ON DELETE SET NULL
+);
+
+CREATE TABLE Orders (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Date DATETIME NOT NULL,
+    Amount DECIMAL(18, 2) NOT NULL,
+    EmployeeId INT NOT NULL,
+    CounterpartyId INT NOT NULL,
+    FOREIGN KEY (EmployeeId) REFERENCES Employees(Id) ON DELETE RESTRICT,
+    FOREIGN KEY (CounterpartyId) REFERENCES Counterparties(Id) ON DELETE RESTRICT
+);

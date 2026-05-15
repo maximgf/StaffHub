@@ -1,3 +1,4 @@
+<!-- Диалог ввода и правки данных сотрудника. -->
 <Window x:Class="StaffHub.Application.Views.EmployeeFormWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

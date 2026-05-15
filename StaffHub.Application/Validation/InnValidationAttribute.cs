@@ -3,8 +3,17 @@ using System.Linq;
 
 namespace StaffHub.Application.Validation;
 
+/// <summary>
+/// Атрибут для проверки правильности ИНН (10 или 12 цифр с проверкой контрольной суммы).
+/// </summary>
 public class InnValidationAttribute : ValidationAttribute
 {
+    /// <summary>
+    /// Проверяет строку ИНН: длина, набор цифр и контрольные разряды для 10- или 12-значного номера.
+    /// </summary>
+    /// <param name="value">Проверяемое значение (строка ИНН).</param>
+    /// <param name="validationContext">Контекст валидации данных.</param>
+    /// <returns>Результат проверки или <c>null</c>, если значение допустимо.</returns>
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         var inn = value as string;
@@ -44,6 +53,12 @@ public class InnValidationAttribute : ValidationAttribute
         return ValidationResult.Success;
     }
 
+    /// <summary>
+    /// Вычисляет контрольную цифру по переданным коэффициентам (алгоритм ФНС для ИНН).
+    /// </summary>
+    /// <param name="inn">Строка ИНН.</param>
+    /// <param name="coefficients">Весовые коэффициенты для соответствующих разрядов.</param>
+    /// <returns>Значение контрольного разряда.</returns>
     private int GetChecksum(string inn, int[] coefficients)
     {
         int sum = 0;

@@ -1,3 +1,4 @@
+<!-- Главное окно с вкладками: сотрудники, контрагенты, заказы. -->
 <Window x:Class="StaffHub.Application.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -15,9 +16,24 @@
                         <Button Content="Добавить" Command="{Binding AddCommand}" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Редактировать" Command="{Binding EditCommand}" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Удалить" Command="{Binding DeleteCommand}" Width="100"/>
+                        <TextBlock Text="Загрузка..." Margin="10,0,0,0" VerticalAlignment="Center" Foreground="Gray">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
                     
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Employees}" SelectedItem="{Binding SelectedEmployee}" AutoGenerateColumns="False" IsReadOnly="True" Margin="5">
+                        <DataGrid.InputBindings>
+                            <KeyBinding Key="Delete" Command="{Binding DeleteCommand}"/>
+                        </DataGrid.InputBindings>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                             <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}" Width="*"/>
@@ -41,9 +57,24 @@
                         <Button Content="Добавить" Command="{Binding AddCommand}" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Редактировать" Command="{Binding EditCommand}" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Удалить" Command="{Binding DeleteCommand}" Width="100"/>
+                        <TextBlock Text="Загрузка..." Margin="10,0,0,0" VerticalAlignment="Center" Foreground="Gray">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
                     
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Counterparties}" SelectedItem="{Binding SelectedCounterparty}" AutoGenerateColumns="False" IsReadOnly="True" Margin="5">
+                        <DataGrid.InputBindings>
+                            <KeyBinding Key="Delete" Command="{Binding DeleteCommand}"/>
+                        </DataGrid.InputBindings>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                             <DataGridTextColumn Header="Наименование" Binding="{Binding Name}" Width="*"/>
@@ -65,9 +96,24 @@
                         <Button Content="Добавить" Command="{Binding AddCommand}" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Редактировать" Command="{Binding EditCommand}" Width="100" Margin="0,0,5,0"/>
                         <Button Content="Удалить" Command="{Binding DeleteCommand}" Width="100"/>
+                        <TextBlock Text="Загрузка..." Margin="10,0,0,0" VerticalAlignment="Center" Foreground="Gray">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
                     </StackPanel>
                     
                     <DataGrid Grid.Row="1" ItemsSource="{Binding Orders}" SelectedItem="{Binding SelectedOrder}" AutoGenerateColumns="False" IsReadOnly="True" Margin="5">
+                        <DataGrid.InputBindings>
+                            <KeyBinding Key="Delete" Command="{Binding DeleteCommand}"/>
+                        </DataGrid.InputBindings>
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                             <DataGridTextColumn Header="Дата" Binding="{Binding Date, StringFormat=dd.MM.yyyy}" Width="100"/>

@@ -3,56 +3,103 @@ using CommunityToolkit.Mvvm.Input;
 using StaffHub.Core.Entities;
 using StaffHub.Core.Interfaces;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace StaffHub.Application.ViewModels;
 
+/// <summary>
+/// Модель представления для списка заказов.
+/// </summary>
 public partial class OrdersViewModel : ObservableObject
 {
     private readonly IRepository<Order> _repository;
     private readonly IRepository<Employee> _employeeRepository;
     private readonly IRepository<Counterparty> _counterpartyRepository;
 
+    /// <summary>
+    /// Коллекция загруженных заказов.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<Order> orders = new();
 
+    /// <summary>
+    /// Выделенный в таблице заказ.
+    /// </summary>
     [ObservableProperty]
     private Order? selectedOrder;
 
+    /// <summary>
+    /// Флаг состояния загрузки данных.
+    /// </summary>
+    [ObservableProperty]
+    private bool isLoading;
+
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="OrdersViewModel"/>.
+    /// </summary>
+    /// <param name="repository">Репозиторий заказов.</param>
+    /// <param name="employeeRepository">Репозиторий сотрудников.</param>
+    /// <param name="counterpartyRepository">Репозиторий контрагентов.</param>
     public OrdersViewModel(IRepository<Order> repository, IRepository<Employee> employeeRepository, IRepository<Counterparty> counterpartyRepository)
     {
         _repository = repository;
         _employeeRepository = employeeRepository;
         _counterpartyRepository = counterpartyRepository;
-        LoadData();
     }
 
-    public void LoadData()
+    /// <summary>
+    /// Асинхронно загружает список заказов из базы данных.
+    /// </summary>
+    [RelayCommand]
+    public async Task LoadDataAsync()
     {
-        Orders.Clear();
-        foreach (var order in _repository.GetAll())
+        try
         {
-            Orders.Add(order);
+            IsLoading = true;
+
+            var items = await _repository.GetAllAsync();
+
+            Orders.Clear();
+            foreach (var order in items)
+            {
+                Orders.Add(order);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            MessageBox.Show("Ошибка загрузки заказов: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
+    /// <summary>
+    /// Команда добавления нового заказа.
+    /// </summary>
     [RelayCommand]
-    private void Add()
+    private async Task Add()
     {
         var newOrder = new Order { Date = System.DateTime.Now };
         var vm = new OrderFormViewModel(newOrder, _employeeRepository.GetAll(), _counterpartyRepository.GetAll());
         if (ShowDialog(vm) == true)
         {
             _repository.Add(newOrder);
-            LoadData();
+            await LoadDataAsync();
         }
     }
 
+    /// <summary>
+    /// Команда редактирования выбранного заказа.
+    /// </summary>
     [RelayCommand]
-    private void Edit()
+    private async Task Edit()
     {
         if (SelectedOrder == null) return;
 
+        // Независимая копия для диалога: при отмене исходная сущность не меняется.
         var clone = new Order
         {
             Id = SelectedOrder.Id,
@@ -72,12 +119,15 @@ public partial class OrdersViewModel : ObservableObject
             SelectedOrder.Counterparty = clone.Counterparty;
             
             _repository.Update(SelectedOrder);
-            LoadData();
+            await LoadDataAsync();
         }
     }
 
+    /// <summary>
+    /// Команда удаления выбранного заказа с подтверждением.
+    /// </summary>
     [RelayCommand]
-    private void Delete()
+    private async Task Delete()
     {
         if (SelectedOrder == null) return;
         
@@ -87,12 +137,18 @@ public partial class OrdersViewModel : ObservableObject
         if (result == MessageBoxResult.Yes)
         {
             _repository.Delete(SelectedOrder);
-            LoadData();
+            await LoadDataAsync();
         }
     }
 
+    /// <summary>
+    /// Делегат открытия модального окна формы заказа (задаётся из представления главного окна).
+    /// </summary>
     public System.Func<OrderFormViewModel, bool?>? ShowDialogRequest { get; set; }
 
+    /// <summary>
+    /// Открывает диалог через <see cref="ShowDialogRequest"/>, если делегат задан.
+    /// </summary>
     private bool? ShowDialog(OrderFormViewModel vm)
     {
         return ShowDialogRequest?.Invoke(vm);

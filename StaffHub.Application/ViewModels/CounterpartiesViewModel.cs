@@ -3,54 +3,100 @@ using CommunityToolkit.Mvvm.Input;
 using StaffHub.Core.Entities;
 using StaffHub.Core.Interfaces;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace StaffHub.Application.ViewModels;
 
+/// <summary>
+/// Модель представления для списка контрагентов.
+/// </summary>
 public partial class CounterpartiesViewModel : ObservableObject
 {
     private readonly IRepository<Counterparty> _repository;
     private readonly IRepository<Employee> _employeeRepository;
 
+    /// <summary>
+    /// Коллекция загруженных контрагентов.
+    /// </summary>
     [ObservableProperty]
     private ObservableCollection<Counterparty> counterparties = new();
 
+    /// <summary>
+    /// Выделенный в таблице контрагент.
+    /// </summary>
     [ObservableProperty]
     private Counterparty? selectedCounterparty;
 
+    /// <summary>
+    /// Флаг состояния загрузки данных.
+    /// </summary>
+    [ObservableProperty]
+    private bool isLoading;
+
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="CounterpartiesViewModel"/>.
+    /// </summary>
+    /// <param name="repository">Репозиторий контрагентов.</param>
+    /// <param name="employeeRepository">Репозиторий сотрудников.</param>
     public CounterpartiesViewModel(IRepository<Counterparty> repository, IRepository<Employee> employeeRepository)
     {
         _repository = repository;
         _employeeRepository = employeeRepository;
-        LoadData();
     }
 
-    public void LoadData()
+    /// <summary>
+    /// Асинхронно загружает список контрагентов из базы данных.
+    /// </summary>
+    [RelayCommand]
+    public async Task LoadDataAsync()
     {
-        Counterparties.Clear();
-        foreach (var cp in _repository.GetAll())
+        try
         {
-            Counterparties.Add(cp);
+            IsLoading = true;
+
+            var items = await _repository.GetAllAsync();
+
+            Counterparties.Clear();
+            foreach (var cp in items)
+            {
+                Counterparties.Add(cp);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            MessageBox.Show("Ошибка загрузки контрагентов: " + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 
+    /// <summary>
+    /// Команда добавления нового контрагента.
+    /// </summary>
     [RelayCommand]
-    private void Add()
+    private async Task Add()
     {
         var newCounterparty = new Counterparty();
         var vm = new CounterpartyFormViewModel(newCounterparty, _employeeRepository.GetAll());
         if (ShowDialog(vm) == true)
         {
             _repository.Add(newCounterparty);
-            LoadData();
+            await LoadDataAsync();
         }
     }
 
+    /// <summary>
+    /// Команда редактирования выбранного контрагента.
+    /// </summary>
     [RelayCommand]
-    private void Edit()
+    private async Task Edit()
     {
         if (SelectedCounterparty == null) return;
 
+        // Независимая копия для диалога: при отмене исходная сущность не меняется.
         var clone = new Counterparty
         {
             Id = SelectedCounterparty.Id,
@@ -68,12 +114,15 @@ public partial class CounterpartiesViewModel : ObservableObject
             SelectedCounterparty.Curator = clone.Curator;
             
             _repository.Update(SelectedCounterparty);
-            LoadData();
+            await LoadDataAsync();
         }
     }
 
+    /// <summary>
+    /// Команда удаления выбранного контрагента с подтверждением.
+    /// </summary>
     [RelayCommand]
-    private void Delete()
+    private async Task Delete()
     {
         if (SelectedCounterparty == null) return;
         
@@ -83,12 +132,18 @@ public partial class CounterpartiesViewModel : ObservableObject
         if (result == MessageBoxResult.Yes)
         {
             _repository.Delete(SelectedCounterparty);
-            LoadData();
+            await LoadDataAsync();
         }
     }
 
+    /// <summary>
+    /// Делегат открытия модального окна формы контрагента (задаётся из представления главного окна).
+    /// </summary>
     public System.Func<CounterpartyFormViewModel, bool?>? ShowDialogRequest { get; set; }
 
+    /// <summary>
+    /// Открывает диалог через <see cref="ShowDialogRequest"/>, если делегат задан.
+    /// </summary>
     private bool? ShowDialog(CounterpartyFormViewModel vm)
     {
         return ShowDialogRequest?.Invoke(vm);

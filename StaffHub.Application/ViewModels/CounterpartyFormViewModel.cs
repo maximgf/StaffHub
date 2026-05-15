@@ -6,11 +6,27 @@ using System.ComponentModel.DataAnnotations;
 
 namespace StaffHub.Application.ViewModels;
 
+/// <summary>
+/// Модель представления для формы добавления и редактирования контрагента.
+/// Поддерживает валидацию введенных данных.
+/// </summary>
 public partial class CounterpartyFormViewModel : ObservableValidator
 {
+    /// <summary>
+    /// Внутренняя модель контрагента.
+    /// </summary>
     public Counterparty Counterparty { get; }
+
+    /// <summary>
+    /// Коллекция доступных сотрудников для выбора куратора.
+    /// </summary>
     public IEnumerable<Employee> Employees { get; }
 
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="CounterpartyFormViewModel"/>.
+    /// </summary>
+    /// <param name="counterparty">Редактируемый контрагент.</param>
+    /// <param name="employees">Список сотрудников.</param>
     public CounterpartyFormViewModel(Counterparty counterparty, IEnumerable<Employee> employees)
     {
         Counterparty = counterparty;
@@ -43,6 +59,9 @@ public partial class CounterpartyFormViewModel : ObservableValidator
         }
     }
 
+    /// <summary>
+    /// Выбранный куратор контрагента.
+    /// </summary>
     public Employee? Curator
     {
         get => Counterparty.Curator;

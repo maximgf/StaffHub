@@ -7,10 +7,21 @@ using System.Linq;
 
 namespace StaffHub.Application.ViewModels;
 
+/// <summary>
+/// Модель представления для формы добавления и редактирования сотрудника.
+/// Поддерживает валидацию введенных данных.
+/// </summary>
 public partial class EmployeeFormViewModel : ObservableValidator
 {
+    /// <summary>
+    /// Внутренняя модель сотрудника.
+    /// </summary>
     public Employee Employee { get; }
 
+    /// <summary>
+    /// Инициализирует новый экземпляр <see cref="EmployeeFormViewModel"/>.
+    /// </summary>
+    /// <param name="employee">Редактируемый сотрудник.</param>
     public EmployeeFormViewModel(Employee employee)
     {
         Employee = employee;
@@ -55,6 +66,9 @@ public partial class EmployeeFormViewModel : ObservableValidator
         }
     }
 
+    /// <summary>
+    /// Должность сотрудника в форме редактирования.
+    /// </summary>
     public Position Position
     {
         get => Employee.Position;
@@ -65,6 +79,9 @@ public partial class EmployeeFormViewModel : ObservableValidator
         }
     }
 
+    /// <summary>
+    /// Дата рождения в форме редактирования.
+    /// </summary>
     public DateTime BirthDate
     {
         get => Employee.BirthDate;
@@ -75,5 +92,8 @@ public partial class EmployeeFormViewModel : ObservableValidator
         }
     }
 
+    /// <summary>
+    /// Значения перечисления должностей для привязки к списку выбора.
+    /// </summary>
     public IEnumerable<Position> Positions => Enum.GetValues(typeof(Position)).Cast<Position>();
 }

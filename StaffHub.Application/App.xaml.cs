@@ -6,10 +6,17 @@ using System.Windows;
 
 namespace StaffHub.Application;
 
+/// <summary>
+/// Логика взаимодействия для App.xaml
+/// Настраивает DI контейнер и запускает главное окно.
+/// </summary>
 public partial class App : System.Windows.Application
 {
     private ServiceProvider _serviceProvider;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр приложения.
+    /// </summary>
     public App()
     {
         var services = new ServiceCollection();
@@ -17,20 +24,26 @@ public partial class App : System.Windows.Application
         _serviceProvider = services.BuildServiceProvider();
     }
 
+    /// <summary>
+    /// Регистрирует сервисы базы данных, моделей представления и окон в контейнере внедрения зависимостей.
+    /// </summary>
     private void ConfigureServices(IServiceCollection services)
     {
         services.AddStaffHubDatabase();
 
-        // ViewModels
+        // Модели представления вкладок и главного окна.
         services.AddTransient<EmployeesViewModel>();
         services.AddTransient<CounterpartiesViewModel>();
         services.AddTransient<OrdersViewModel>();
         services.AddTransient<MainViewModel>();
 
-        // Views
+        // Главное окно интерфейса.
         services.AddTransient<MainWindow>();
     }
 
+    /// <summary>
+    /// Показывает главное окно при запуске приложения.
+    /// </summary>
     private void OnStartup(object sender, StartupEventArgs e)
     {
         var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();

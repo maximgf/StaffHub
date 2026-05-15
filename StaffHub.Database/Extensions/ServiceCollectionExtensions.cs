@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddStaffHubDatabase(this IServiceCollection services)
     {
         // Connection string based on db.txt
-        string connectionString = "Server=rc1b-1dtlcql6dlbt3qvg.mdb.yandexcloud.net;Port=3306;Database=db1;Uid=user1;Pwd=qwerty123;SslMode=VerifyCA;";
+        string connectionString = "Server=rc1b-1dtlcql6dlbt3qvg.mdb.yandexcloud.net;Port=3306;Database=db1;Uid=user1;Pwd=qwerty123;SslMode=Required;";
 
         var configuration = new Configuration();
         configuration.SetProperty(Environment.ConnectionDriver, typeof(MySqlDataDriver).AssemblyQualifiedName);

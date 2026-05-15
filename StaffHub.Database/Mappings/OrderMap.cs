@@ -28,5 +28,8 @@ public class OrderMap : ClassMapping<Order>
             m.NotNullable(true);
             m.Cascade(Cascade.None);
         });
+        Property(x => x.IsDeleted, m => {
+            m.NotNullable(true);
+        });
     }
 }

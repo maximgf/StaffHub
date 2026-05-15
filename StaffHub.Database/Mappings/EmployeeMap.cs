@@ -28,5 +28,8 @@ public class EmployeeMap : ClassMapping<Employee>
         Property(x => x.BirthDate, m => {
             m.NotNullable(true);
         });
+        Property(x => x.IsDeleted, m => {
+            m.NotNullable(true);
+        });
     }
 }

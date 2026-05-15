@@ -23,5 +23,8 @@ public class CounterpartyMap : ClassMapping<Counterparty>
             m.NotNullable(false);
             m.Cascade(Cascade.None);
         });
+        Property(x => x.IsDeleted, m => {
+            m.NotNullable(true);
+        });
     }
 }

@@ -1,9 +1,10 @@
 using NHibernate;
+using StaffHub.Core.Entities;
 using StaffHub.Core.Interfaces;
 
 namespace StaffHub.Database.Repositories;
 
-public class Repository<T> : IRepository<T> where T : class
+public class Repository<T> : IRepository<T> where T : EntityBase
 {
     private readonly ISession _session;
 
@@ -22,18 +23,20 @@ public class Repository<T> : IRepository<T> where T : class
     public void Delete(T entity)
     {
         using var transaction = _session.BeginTransaction();
-        _session.Delete(entity);
+        entity.IsDeleted = true;
+        _session.Update(entity);
         transaction.Commit();
     }
 
     public IEnumerable<T> GetAll()
     {
-        return _session.Query<T>().ToList();
+        return _session.Query<T>().Where(e => !e.IsDeleted).ToList();
     }
 
     public T GetById(int id)
     {
-        return _session.Get<T>(id);
+        var entity = _session.Get<T>(id);
+        return entity != null && !entity.IsDeleted ? entity : null;
     }
 
     public void Update(T entity)

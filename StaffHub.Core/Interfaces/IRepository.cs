@@ -1,6 +1,8 @@
+using StaffHub.Core.Entities;
+
 namespace StaffHub.Core.Interfaces;
 
-public interface IRepository<T> where T : class
+public interface IRepository<T> where T : EntityBase
 {
     T GetById(int id);
     IEnumerable<T> GetAll();
